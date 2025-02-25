@@ -48,9 +48,8 @@ public class InputManager : MonoBehaviour
         }
 
         OnMove?.Invoke(inputVector);
-        
-        //adding for jump        
-         if(Input.GetKey(KeyCode.Space)) //Space
+
+          if(Input.GetKey(KeyCode.Space)) //Space
         {
             OnJump?.Invoke();
             Debug.Log("User's Input: Jump");

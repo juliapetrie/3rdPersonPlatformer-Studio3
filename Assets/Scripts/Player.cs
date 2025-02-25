@@ -5,8 +5,9 @@ public class Player : MonoBehaviour
     [SerializeField] private Rigidbody playerRigidbody;
     [SerializeField] private float playerSpeed;
     [SerializeField] private float jumpHeight;
+     [SerializeField] private InputManager inputManager;
 
-    private bool plane;
+    private bool onPlane = true;
 
     public void MovePlayer(Vector2 input)
     {
@@ -17,22 +18,27 @@ public class Player : MonoBehaviour
       public void Jump() 
             
     {
-        if(plane)
+        if(onPlane)
         {
         playerRigidbody.AddForce(Vector3.up * jumpHeight, ForceMode.Impulse);
-                
-
-        plane = false;
+        onPlane = false;
 
         }
     }
 
     private void OnCollisionEnter(Collision c)
     {
-        if(c.gameObject.name == "Plane")
+         if (c.gameObject.CompareTag("Plane"))
         {
-            plane = true;
+            onPlane = true;
+        }
+    }
+
+     private void OnCollisionExit(Collision c)
+    {
+         if (c.gameObject.CompareTag("Plane"))
+        {
+            onPlane = false;
         }
     }
 }
-
