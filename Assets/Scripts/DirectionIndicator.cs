@@ -4,12 +4,15 @@ using Unity.Cinemachine;
 public class DirectionIndicator : MonoBehaviour
 {
     [SerializeField] private CinemachineCamera freeLookCamera;
+    [SerializeField] private Transform orientation;
 
-    // Update is called once per frame
     void Update()
     {
-        transform.forward = freeLookCamera.transform.forward;
-        transform.rotation = Quaternion.Euler(0,transform.rotation.eulerAngles.y,0);
+        if (freeLookCamera == null || orientation == null) return;
 
+        Vector3 cameraForward = freeLookCamera.transform.forward;
+        cameraForward.y = 0; 
+        orientation.forward = cameraForward.normalized;
     }
 }
+

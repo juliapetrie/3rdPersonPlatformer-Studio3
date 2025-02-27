@@ -2,43 +2,37 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] private Rigidbody playerRigidbody;
-    [SerializeField] private float playerSpeed;
-    [SerializeField] private float jumpHeight;
-     [SerializeField] private InputManager inputManager;
-
-    private bool onPlane = true;
+    [SerializeField] private Rigidbody rb;
+    [SerializeField] private float speed, jumpHeight;
+    [SerializeField] private GameObject directionIndicator;
+    private bool onGround = true;
 
     public void MovePlayer(Vector2 input)
     {
-        Vector3 inputXZPlane = new(input.x, 0, input.y);
-        playerRigidbody.AddForce(inputXZPlane * playerSpeed);
+        if (directionIndicator == null) return;
+
+        Vector3 cameraForward = directionIndicator.transform.forward;
+        Vector3 cameraRight = Vector3.Cross(Vector3.up, cameraForward);
+        cameraForward.y = cameraRight.y = 0;
+
+        Vector3 moveDirection = (cameraForward * input.y + cameraRight * input.x).normalized;
+        rb.linearVelocity = new Vector3(moveDirection.x * speed, rb.linearVelocity.y, moveDirection.z * speed);
+
+        // Rotate player to cam direction
+        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(cameraForward), Time.deltaTime * 10f);
     }
 
-      public void Jump() 
-            
+    public void Jump()
     {
-        if(onPlane)
+        if (onGround)
         {
-        playerRigidbody.AddForce(Vector3.up * jumpHeight, ForceMode.Impulse);
-        onPlane = false;
-
+            rb.AddForce(Vector3.up * jumpHeight, ForceMode.Impulse);
+            onGround = false;
         }
     }
 
-    private void OnCollisionEnter(Collision c)
+    private void OnCollisionEnter(Collision collision)
     {
-         if (c.gameObject.CompareTag("Plane"))
-        {
-            onPlane = true;
-        }
-    }
-
-     private void OnCollisionExit(Collision c)
-    {
-         if (c.gameObject.CompareTag("Plane"))
-        {
-            onPlane = false;
-        }
+        if (collision.gameObject.CompareTag("Plane")) onGround = true;
     }
 }
